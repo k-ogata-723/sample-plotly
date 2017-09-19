@@ -2,6 +2,9 @@ library('plotly')
 library('glmnet')
 library('ggplot2')
 
+Sys.setenv("plotly_username"="koki.ogata")
+Sys.setenv("plotly_api_key"="qZ8FtXjmxDahUU6fenXG")
+
 set.seed(1)
 
 x <- seq(0, 1, by = 0.01)
