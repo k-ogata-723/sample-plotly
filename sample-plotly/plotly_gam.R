@@ -45,6 +45,7 @@ p <- ggplot(performance, aes(x = Lambda, y = RMSE)) +
   geom_point() +
   geom_line()
 
+# 作成したggplotをplotlyで表示。オフラインでブラウザで表示される。
 p <- ggplotly(p)
 
 p
