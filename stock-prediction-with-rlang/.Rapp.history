@@ -4655,2162 +4655,6 @@ p <- ggplot(performance, aes(x = Lambda, y = RMSE)) +#
 p <- ggplotly(p)#
 #
 p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-stock_2015 <- order(stock_2015[,1],)#
-print(stock_2015)#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-print(y)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-setwd("machine-learning/stock-prediction-with-rlang/")
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-stock_2015 <- order(stock_2015[,1],)#
-print(stock_2015)#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-print(y)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-stock_2015 <- stock_2015[order[stock_2015[,1],]]#
-print(stock_2015)#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-print(y)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- as.matrix(read.csv("stocks-sony-2015.csv"))#
-stock_2015 <- stock_2015[order[stock_2015[,1],]]#
-print(stock_2015)#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-print(y)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- as.matrix(read.csv("stocks-sony-2015.csv"))#
-stock_2015 <- stock_2015[order[stock_2015[,1],]]#
-print(stock_2015)#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-print(y)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- as.matrix(read.csv("stocks-sony-2015.csv"))#
-stock_2015 <- stock_2015[order[stock_2015[,1],]]#
-print(stock_2015)#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-print(y)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-stock_2015 <- as.matrix(stock_2015)#
-stock_2015 <- stock_2015[order[stock_2015[,1],]]#
-print(stock_2015)#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-print(y)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-as.matrix(stock_2015)#
-stock_2015 <- stock_2015[order[stock_2015[,1],]]#
-print(stock_2015)#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-print(y)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-as.matrix(stock_2015)#
-typeof(stock_2015)#
-stock_2015 <- stock_2015[order[stock_2015[,1],]]#
-print(stock_2015)#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-print(y)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# as.matrix(stock_2015)#
-typeof(stock_2015)#
-stock_2015 <- stock_2015[order[stock_2015[,1],]]#
-print(stock_2015)#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-print(y)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# as.matrix(stock_2015)#
-stock_2015 <- data.frame(stock_2015)#
-typeof(stock_2015)#
-stock_2015 <- stock_2015[order[stock_2015[,1],]]#
-print(stock_2015)#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-print(y)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# as.matrix(stock_2015)#
-# stock_2015 <- data.frame(stock_2015)#
-typeof(stock_2015)#
-stock_2015 <- stock_2015[order[stock_2015[,1],]]#
-print(stock_2015)#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-print(y)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# as.matrix(stock_2015)#
-# stock_2015 <- data.frame(stock_2015)#
-typeof(stock_2015)#
-stock_2015 <- stock_2015[order(stock_2015[,1],)]#
-print(stock_2015)#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-print(y)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-stock_2015 <- stock_2015[order(stock_2015[,1]),]
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# as.matrix(stock_2015)#
-# stock_2015 <- data.frame(stock_2015)#
-typeof(stock_2015)#
-stock_2015 <- stock_2015[order(stock_2015[,1]),]#
-print(stock_2015)#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-print(y)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# typeofを使えば、データ型を確認できる#
-# typeof(stock_2015)#
-# 日付で昇順にする#
-stock_2015 <- stock_2015[order(stock_2015[,1]),]#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2016 <- stock_2016[order(stock_2016[,1]),]#
-#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-stock_2017 <- stock_2017[order(stock_2017[,1]),]#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-print(y)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# typeofを使えば、データ型を確認できる#
-# typeof(stock_2015)#
-# 日付で昇順にする#
-stock_2015 <- stock_2015[order(stock_2015[,1]),]#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2016 <- stock_2016[order(stock_2016[,1]),]#
-#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-stock_2017 <- stock_2017[order(stock_2017[,1]),]#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# typeofを使えば、データ型を確認できる#
-# typeof(stock_2015)#
-# 日付で昇順にする#
-stock_2015 <- stock_2015[order(stock_2015[,1]),]#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2016 <- stock_2016[order(stock_2016[,1]),]#
-#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-stock_2017 <- stock_2017[order(stock_2017[,1]),]#
-#
-stock <- rbind(stock_2017, stock_2016, stock_2015)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# typeofを使えば、データ型を確認できる#
-# typeof(stock_2015)#
-# 日付で昇順にする#
-stock_2015 <- stock_2015[order(stock_2015[,1]),]#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2016 <- stock_2016[order(stock_2016[,1]),]#
-#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-stock_2017 <- stock_2017[order(stock_2017[,1]),]#
-#
-stock <- rbind(stock_2017, stock_2016, stock_2015)#
-stock <- stock[order(stock[,1]),]#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# typeofを使えば、データ型を確認できる#
-# typeof(stock_2015)#
-# 日付で昇順にする#
-stock_2015 <- stock_2015[order(stock_2015[,1]),]#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2016 <- stock_2016[order(stock_2016[,1]),]#
-#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-stock_2017 <- stock_2017[order(stock_2017[,1]),]#
-#
-stock <- rbind(stock_2017, stock_2016, stock_2015)#
-stock <- stock[order(stock[,2]),]#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# typeofを使えば、データ型を確認できる#
-# typeof(stock_2015)#
-# 日付で昇順にする#
-stock_2015 <- stock_2015[order(stock_2015[,1]),]#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2016 <- stock_2016[order(stock_2016[,1]),]#
-#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-stock_2017 <- stock_2017[order(stock_2017[,1]),]#
-#
-stock <- rbind(stock_2017, stock_2016, stock_2015)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# typeofを使えば、データ型を確認できる#
-# typeof(stock_2015)#
-# 日付で昇順にする#
-stock_2015 <- stock_2015[order(stock_2015[,1]),]#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2016 <- stock_2016[order(stock_2016[,1]),]#
-#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-stock_2017 <- stock_2017[order(stock_2017[,1]),]#
-#
-stock <- rbind(stock_2017, stock_2016, stock_2015)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# typeofを使えば、データ型を確認できる#
-# typeof(stock_2015)#
-# 日付で昇順にする#
-stock_2015 <- stock_2015[order(stock_2015[,1]),]#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2016 <- stock_2016[order(stock_2016[,1]),]#
-#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-stock_2017 <- stock_2017[order(stock_2017[,1]),]#
-#
-stock <- rbind(stock_2017, stock_2016, stock_2015)#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# typeofを使えば、データ型を確認できる#
-# typeof(stock_2015)#
-# 日付で昇順にする#
-stock_2015 <- stock_2015[order(stock_2015[,1]),]#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2016 <- stock_2016[order(stock_2016[,1]),]#
-#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-stock_2017 <- stock_2017[order(stock_2017[,1]),]#
-#
-stock <- rbind(stock_2017, stock_2016, stock_2015)#
-stock <- stock[order(stock[,1]),]#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# typeofを使えば、データ型を確認できる#
-# typeof(stock_2015)#
-# 日付で昇順にする#
-# stock_2015 <- stock_2015[order(stock_2015[,1]),]#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-# stock_2016 <- stock_2016[order(stock_2016[,1]),]#
-#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-# stock_2017 <- stock_2017[order(stock_2017[,1]),]#
-#
-stock <- rbind(stock_2017, stock_2016, stock_2015)#
-stock <- stock[order(stock[,1]),]#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# typeofを使えば、データ型を確認できる#
-# typeof(stock_2015)#
-# 日付で昇順にする#
-# stock_2015 <- stock_2015[order(stock_2015[,1]),]#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-# stock_2016 <- stock_2016[order(stock_2016[,1]),]#
-#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-# stock_2017 <- stock_2017[order(stock_2017[,1]),]#
-#
-stock <- rbind(stock_2017, stock_2016, stock_2015)#
-stock <- stock[order(stock[,5]),]#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# typeofを使えば、データ型を確認できる#
-# typeof(stock_2015)#
-# 日付で昇順にする#
-stock_2015 <- stock_2015[order(stock_2015[,1]),]#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2016 <- stock_2016[order(stock_2016[,1]),]#
-#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-stock_2017 <- stock_2017[order(stock_2017[,1]),]#
-#
-stock <- rbind(stock_2017, stock_2016, stock_2015)#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# typeofを使えば、データ型を確認できる#
-# typeof(stock_2015)#
-# 日付で昇順にする#
-stock_2015 <- stock_2015[order(stock_2015[,1]),]#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2016 <- stock_2016[order(stock_2016[,1]),]#
-#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-stock_2017 <- stock_2017[order(stock_2017[,1]),]#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
-# データを学習データとテストデータに分けて、交差検定をおこなう#
-# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
-#
-stock_2015 <- read.csv("stocks-sony-2015.csv")#
-# typeofを使えば、データ型を確認できる#
-# typeof(stock_2015)#
-# 日付で昇順にする#
-stock_2015 <- stock_2015[order(stock_2015[,1]),]#
-#
-stock_2016 <- read.csv("stocks-sony-2016.csv")#
-stock_2016 <- stock_2016[order(stock_2016[,1]),]#
-#
-stock_2017 <- read.csv("stocks-sony-2017.csv")#
-stock_2017 <- stock_2017[order(stock_2017[,1]),]#
-#
-stock <- rbind(stock_2015, stock_2016, stock_2017)#
-#
-rownames(stock) <- c(1:nrow(stock))#
-#
-print(stock)#
-#
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
-  return(sqrt(mean((y - h) ^ 2)))#
-}#
-#
-performance <- data.frame()#
-#
-# degreeを1から12まで増やしつつ、計算していく#
-for (d in 1:12)#
-{#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
-}#
-#
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
-#
-p
 library('glmnet')#
 library('ggplot2')#
 library('plotly')#
@@ -6838,65 +4682,128 @@ rownames(stock) <- c(1:nrow(stock))#
 #
 print(stock)#
 #
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
+rmse <- function(y, h) {#
   return(sqrt(mean((y - h) ^ 2)))#
 }#
-#
 performance <- data.frame()#
 #
-# degreeを1から12まで増やしつつ、計算していく#
 for (d in 1:12)#
 {#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d) + poly(yield, degree = d), data = stock)#
 }#
 #
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
 #
-p
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
+setwd('machine-learning/stock-prediction/')
 library('glmnet')#
 library('ggplot2')#
 library('plotly')#
@@ -6924,66 +4831,127 @@ rownames(stock) <- c(1:nrow(stock))#
 #
 print(stock)#
 #
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 1]#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
-rmse <- function(y, h)#
-{#
+rmse <- function(y, h) {#
   return(sqrt(mean((y - h) ^ 2)))#
 }#
-#
 performance <- data.frame()#
 #
-# degreeを1から12まで増やしつつ、計算していく#
 for (d in 1:12)#
 {#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d) + poly(yield, degree = d), data = stock)#
 }#
 #
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
 #
-p
-warnings()
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
 library('glmnet')#
 library('ggplot2')#
 library('plotly')#
@@ -7011,64 +4979,132 @@ rownames(stock) <- c(1:nrow(stock))#
 #
 print(stock)#
 #
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 2]#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
 rmse <- function(y, h) {#
   return(sqrt(mean((y - h) ^ 2)))#
 }#
 #
 performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
 #
-# degreeを1から12まで増やしつつ、計算していく#
 for (d in 1:12)#
 {#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d) + poly(yield, degree = d), data = stock)#
 }#
 #
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
 #
-p
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
+getwd()
+setwd('/Users/old_ogata/machine-learning/')
+setwd('stock-prediction-with-rlang/')
 library('glmnet')#
 library('ggplot2')#
 library('plotly')#
@@ -7096,64 +5132,212 @@ rownames(stock) <- c(1:nrow(stock))#
 #
 print(stock)#
 #
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 1]#
-y <- stock[, 5]#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
 rmse <- function(y, h) {#
   return(sqrt(mean((y - h) ^ 2)))#
 }#
 #
 performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
 #
-# degreeを1から12まで増やしつつ、計算していく#
 for (d in 1:12)#
 {#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Training',#
-                                  RMSE = rmse(training.y, predict(poly.fit))))#
-#
-  performance <- rbind(performance,#
-                      data.frame(Degree = d,#
-                                  Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d) + poly(yield, degree = d), data = stock)#
 }#
 #
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
 #
-p
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
+stock <- read.csv("stock-sony-250.csv")#
+stock_2015 <- read.csv("stocks-sony-2015.csv")#
+stock_2016 <- read.csv("stocks-sony-2016.csv")#
+stock_2017 <- read.csv("stocks-sony-2017.csv")#
+# 1行目を削除#
+stockData <- stock[2:240, 2:7]#
+# print(stockData)#
+#
+# 終値をyとしてデータにする#
+# y <- stock[ ,5]#
+# print(y)#
+#
+# trainデータ#
+stock_train <- rbind(stock_2017, stock_2016)#
+# print(stock_train)#
+#
+# testデータ#
+stock_test <- stock_2017#
+#
+# # それぞれのデータを取り出し#
+# # 学習には利用していない#
+# lowPrice <- stock[ , 4]#
+# highPrice <- stock[ , 3]#
+# date <- stock[ , 1]#
+##
+##
+# # 確認用にlowPriceをプロット#
+# # plot(date, lowPrice, col="blue", main="plot row stock data", xlab="date", ylab="price")#
+##
+# # data.frame型にまとめていく#
+# # 始値と出来高と売買代金を利用する#
+##
+#
+## train データをdata.frame型に変換#
+dataRegressionTrain <- data.frame(#
+  end = stock_train[ ,5],#
+  start = stock_train[ ,2],#
+  yield = stock_train[ ,6],#
+  buy-sell = stock_train[ ,7]#
+)#
+#
+# print(dataRegressionTrain)#
+# print(stock_train[,1])#
+#
+# ## test データ#
+# dataRegressionTest <- data.frame(#
+# y = stock_test[ ,5],#
+# x1 = stock_test[ ,2],#
+# x4 = stock_test[ ,6],#
+# x5 = stock_test[ ,7]#
+# )#
+##
+##
+# modelLm <- lm(#
+#   y ~(.)^2,#
+#   data = dataRegressionTrain#
+# )#
+##
+# print(modelLm)#
+##
+# sum <- summary(modelLm)#
+# print(sum)#
+##
+# modelLm <- step(modelLm)#
+##
+# # データと重回帰結果をプロットしていく#
+# par(mfrow=c(2,2))#
+# plot(modelLm)#
+# lines(lowPrice, fitted(modelLm))#
+# predict(modelLm)#
+#
+# cor関数を使って、各データの相関関係を出す#
+cor.data <- cor(dataRegressionTrain)#
+print(cor.data)#
+#
+pairs.data <- pairs(dataRegressionTrain, pch=21, bg='red', cex=1)#
+print(pairs.data)#
+#
+# model.lm.train <- ggplot(dataRegressionTrain, aes(x = "日付", y = "終値")) +#
+#   geom_point() +#
+#   geom_smooth(method = 'lm', se = FALSE)#
+##
+# print(model.lm.train)
 library('glmnet')#
 library('ggplot2')#
 library('plotly')#
@@ -7181,45 +5365,17 @@ rownames(stock) <- c(1:nrow(stock))#
 #
 print(stock)#
 #
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 6]#
-y <- stock[, 5]#
-n <- length(x)#
-#
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
-#
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
 rmse <- function(y, h) {#
-    return(sqrt(mean((y - h) ^ 2)))#
+  return(sqrt(mean((y - h) ^ 2)))#
 }#
 #
 performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+まずはyieldのみでpolyをして、結果の#
 #
-# degreeを1から12まで増やしつつ、計算していく#
 for (d in 1:12)#
 {#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d), data = stock)#
 #
   performance <- rbind(performance,#
                       data.frame(Degree = d,#
@@ -7229,16 +5385,122 @@ for (d in 1:12)#
   performance <- rbind(performance,#
                       data.frame(Degree = d,#
                                   Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
+                                  RMSE = rmse(training.y, predict(poly.fit))))#
 }#
 #
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
+print(performance)#
 #
-p
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
 library('glmnet')#
 library('ggplot2')#
 library('plotly')#
@@ -7266,45 +5528,22 @@ rownames(stock) <- c(1:nrow(stock))#
 #
 print(stock)#
 #
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 5]#
-y <- stock[, 4]#
-n <- length(x)#
+indices <- 300#
 #
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
 #
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
 rmse <- function(y, h) {#
-    return(sqrt(mean((y - h) ^ 2)))#
+  return(sqrt(mean((y - h) ^ 2)))#
 }#
 #
 performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+まずはyieldのみでpolyをして、結果の#
 #
-# degreeを1から12まで増やしつつ、計算していく#
 for (d in 1:12)#
 {#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d), data = stock)#
 #
   performance <- rbind(performance,#
                       data.frame(Degree = d,#
@@ -7314,16 +5553,122 @@ for (d in 1:12)#
   performance <- rbind(performance,#
                       data.frame(Degree = d,#
                                   Data = 'Test',#
-                                  RMSE = rmse(test.y, predict(poly.fit,#
-                                              newdata = test.df))))#
+                                  RMSE = rmse(training.y, predict(poly.fit))))#
 }#
 #
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
+print(performance)#
 #
-p
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
 library('glmnet')#
 library('ggplot2')#
 library('plotly')#
@@ -7351,45 +5696,22 @@ rownames(stock) <- c(1:nrow(stock))#
 #
 print(stock)#
 #
-# 学習用のデータとして、終値を、軸に日付を採用する#
-x <- stock[, 7]#
-y <- stock[, 5]#
-n <- length(x)#
+indices <- 300#
 #
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
 #
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
 rmse <- function(y, h) {#
-    return(sqrt(mean((y - h) ^ 2)))#
+  return(sqrt(mean((y - h) ^ 2)))#
 }#
 #
 performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+まずはyieldのみでpolyをして、結果の#
 #
-# degreeを1から12まで増やしつつ、計算していく#
 for (d in 1:12)#
 {#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d), data = stock)#
 #
   performance <- rbind(performance,#
                       data.frame(Degree = d,#
@@ -7403,12 +5725,119 @@ for (d in 1:12)#
                                               newdata = test.df))))#
 }#
 #
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
+print(performance)#
 #
-p
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
 library('glmnet')#
 library('ggplot2')#
 library('plotly')#
@@ -7436,45 +5865,22 @@ rownames(stock) <- c(1:nrow(stock))#
 #
 print(stock)#
 #
-# yieldを使ってendを予測する#
-x <- stock[, 6]#
-y <- stock[, 5]#
-n <- length(x)#
+indices <- 300#
 #
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
 #
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
 rmse <- function(y, h) {#
-    return(sqrt(mean((y - h) ^ 2)))#
+  return(sqrt(mean((y - h) ^ 2)))#
 }#
 #
 performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+まずはyieldのみでpolyをして、結果の#
 #
-# degreeを1から12まで増やしつつ、計算していく#
 for (d in 1:12)#
 {#
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d), data = stock)#
 #
   performance <- rbind(performance,#
                       data.frame(Degree = d,#
@@ -7488,12 +5894,119 @@ for (d in 1:12)#
                                               newdata = test.df))))#
 }#
 #
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
+print(performance)#
 #
-p
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
 library('glmnet')#
 library('ggplot2')#
 library('plotly')#
@@ -7521,42 +6034,1775 @@ rownames(stock) <- c(1:nrow(stock))#
 #
 print(stock)#
 #
-# yieldを使ってendを予測する#
-x <- stock[, 6]#
-y <- stock[, 5]#
-n <- length(x)#
+indices <- 300#
 #
-# データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
-indices <- sort(sample(1:n, round(0.5 * n)))#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
 #
-# 始めからindices個のデータをトレーニングデータとして利用する#
-training.x <- x[indices]#
-training.y <- y[indices]#
-#
-hoge.df <- data.frame(X = training.x, Y = training.y)#
-print(hoge.df)#
-#
-print(training.x)#
-print(training.y)#
-#
-test.x <- x[-indices]#
-test.y <- y[-indices]#
-#
-# テストデータとトレーニングデータのデータフレームを作成する#
-# rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
-training.df <- data.frame(X = training.x, Y = training.y)#
-test.df <- data.frame(X = test.x, Y = test.y)#
-#
-# 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
-# degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
-# まず、コストを出す関数を自作#
 rmse <- function(y, h) {#
-    return(sqrt(mean((y - h) ^ 2)))#
+  return(sqrt(mean((y - h) ^ 2)))#
 }#
 #
 performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+まずはyieldのみでpolyをして、結果の#
 #
-# degreeを1から12まで増やしつつ、計算していく#
+for (d in 1:12)#
+{#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d), data = stock)#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Training',#
+                                  RMSE = rmse(training.y, predict(poly.fit))))#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Test',#
+                                  RMSE = rmse(test.y, predict(poly.fit,#
+                                              newdata = test.df))))#
+}#
+#
+print(performance)#
+#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
+library('glmnet')#
+library('ggplot2')#
+library('plotly')#
+#
+# データを学習データとテストデータに分けて、交差検定をおこなう#
+# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
+#
+stock_2015 <- read.csv("stocks-sony-2015.csv")#
+# typeofを使えば、データ型を確認できる#
+# typeof(stock_2015)#
+# 日付で昇順にする#
+stock_2015 <- stock_2015[order(stock_2015[,1]),]#
+#
+stock_2016 <- read.csv("stocks-sony-2016.csv")#
+stock_2016 <- stock_2016[order(stock_2016[,1]),]#
+#
+stock_2017 <- read.csv("stocks-sony-2017.csv")#
+stock_2017 <- stock_2017[order(stock_2017[,1]),]#
+#
+stock <- rbind(stock_2015, stock_2016, stock_2017)#
+#
+# orderをすると、row numberがあべこべになる#
+# 必要かわからないがrownamesを使って行番号を振り直す#
+rownames(stock) <- c(1:nrow(stock))#
+#
+print(stock)#
+#
+indices <- 300#
+#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
+#
+test.y <- stock[indices:n]#
+test.x <- stock[indices:n]#
+#
+rmse <- function(y, h) {#
+  return(sqrt(mean((y - h) ^ 2)))#
+}#
+#
+performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+まずはyieldのみでpolyをして、結果の#
+#
+for (d in 1:12)#
+{#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d), data = stock)#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Training',#
+                                  RMSE = rmse(training.y, predict(poly.fit))))#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Test',#
+                                  RMSE = rmse(test.y, predict(poly.fit,#
+                                              newdata = test.df))))#
+}#
+#
+print(performance)#
+#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
+library('glmnet')#
+library('ggplot2')#
+library('plotly')#
+#
+# データを学習データとテストデータに分けて、交差検定をおこなう#
+# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
+#
+stock_2015 <- read.csv("stocks-sony-2015.csv")#
+# typeofを使えば、データ型を確認できる#
+# typeof(stock_2015)#
+# 日付で昇順にする#
+stock_2015 <- stock_2015[order(stock_2015[,1]),]#
+#
+stock_2016 <- read.csv("stocks-sony-2016.csv")#
+stock_2016 <- stock_2016[order(stock_2016[,1]),]#
+#
+stock_2017 <- read.csv("stocks-sony-2017.csv")#
+stock_2017 <- stock_2017[order(stock_2017[,1]),]#
+#
+stock <- rbind(stock_2015, stock_2016, stock_2017)#
+#
+# orderをすると、row numberがあべこべになる#
+# 必要かわからないがrownamesを使って行番号を振り直す#
+rownames(stock) <- c(1:nrow(stock))#
+#
+print(stock)#
+#
+indices <- 300#
+#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
+#
+test.y <- stock[indices:n]#
+test.x <- stock[indices:n]#
+#
+rmse <- function(y, h) {#
+  return(sqrt(mean((y - h) ^ 2)))#
+}#
+#
+performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+まずはyieldのみでpolyをして、結果の#
+#
+for (d in 1:12)#
+{#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d), data = stock)#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Training',#
+                                  RMSE = rmse(training.y, predict(poly.fit))))#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Test',#
+                                  RMSE = rmse(test.y, predict(poly.fit,#
+                                              newdata = test.df))))#
+}#
+#
+print(performance)#
+#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
+library('glmnet')#
+library('ggplot2')#
+library('plotly')#
+#
+# データを学習データとテストデータに分けて、交差検定をおこなう#
+# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
+#
+stock_2015 <- read.csv("stocks-sony-2015.csv")#
+# typeofを使えば、データ型を確認できる#
+# typeof(stock_2015)#
+# 日付で昇順にする#
+stock_2015 <- stock_2015[order(stock_2015[,1]),]#
+#
+stock_2016 <- read.csv("stocks-sony-2016.csv")#
+stock_2016 <- stock_2016[order(stock_2016[,1]),]#
+#
+stock_2017 <- read.csv("stocks-sony-2017.csv")#
+stock_2017 <- stock_2017[order(stock_2017[,1]),]#
+#
+stock <- rbind(stock_2015, stock_2016, stock_2017)#
+#
+# orderをすると、row numberがあべこべになる#
+# 必要かわからないがrownamesを使って行番号を振り直す#
+rownames(stock) <- c(1:nrow(stock))#
+#
+print(stock)#
+#
+indices <- 300#
+#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
+#
+n <- length(stock)#
+#
+test.y <- stock[indices:n, 5]#
+test.x <- stock[indices:n, 6]#
+#
+rmse <- function(y, h) {#
+  return(sqrt(mean((y - h) ^ 2)))#
+}#
+#
+performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+まずはyieldのみでpolyをして、結果の#
+#
+for (d in 1:12)#
+{#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d), data = stock)#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Training',#
+                                  RMSE = rmse(training.y, predict(poly.fit))))#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Test',#
+                                  RMSE = rmse(test.y, predict(poly.fit,#
+                                              newdata = test.df))))#
+}#
+#
+print(performance)#
+#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
+library('glmnet')#
+library('ggplot2')#
+library('plotly')#
+#
+# データを学習データとテストデータに分けて、交差検定をおこなう#
+# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
+#
+stock_2015 <- read.csv("stocks-sony-2015.csv")#
+# typeofを使えば、データ型を確認できる#
+# typeof(stock_2015)#
+# 日付で昇順にする#
+stock_2015 <- stock_2015[order(stock_2015[,1]),]#
+#
+stock_2016 <- read.csv("stocks-sony-2016.csv")#
+stock_2016 <- stock_2016[order(stock_2016[,1]),]#
+#
+stock_2017 <- read.csv("stocks-sony-2017.csv")#
+stock_2017 <- stock_2017[order(stock_2017[,1]),]#
+#
+stock <- rbind(stock_2015, stock_2016, stock_2017)#
+#
+# orderをすると、row numberがあべこべになる#
+# 必要かわからないがrownamesを使って行番号を振り直す#
+rownames(stock) <- c(1:nrow(stock))#
+#
+print(stock)#
+#
+indices <- 300#
+#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
+#
+n <- length(stock)#
+#
+test.y <- stock[indices:n, 5]#
+test.x <- stock[indices:n, 6]#
+#
+rmse <- function(y, h) {#
+  return(sqrt(mean((y - h) ^ 2)))#
+}#
+#
+performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+まずはyieldのみでpolyをして、結果の#
+#
+for (d in 1:12)#
+{#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d), data = stock)#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Training',#
+                                  RMSE = rmse(training.y, predict(poly.fit))))#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Test',#
+                                  RMSE = rmse(test.y, predict(poly.fit,#
+                                              newdata = test.df))))#
+}#
+#
+print(performance)#
+#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
+library('glmnet')#
+library('ggplot2')#
+library('plotly')#
+#
+# データを学習データとテストデータに分けて、交差検定をおこなう#
+# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
+#
+stock_2015 <- read.csv("stocks-sony-2015.csv")#
+# typeofを使えば、データ型を確認できる#
+# typeof(stock_2015)#
+# 日付で昇順にする#
+stock_2015 <- stock_2015[order(stock_2015[,1]),]#
+#
+stock_2016 <- read.csv("stocks-sony-2016.csv")#
+stock_2016 <- stock_2016[order(stock_2016[,1]),]#
+#
+stock_2017 <- read.csv("stocks-sony-2017.csv")#
+stock_2017 <- stock_2017[order(stock_2017[,1]),]#
+#
+stock <- rbind(stock_2015, stock_2016, stock_2017)#
+#
+# orderをすると、row numberがあべこべになる#
+# 必要かわからないがrownamesを使って行番号を振り直す#
+rownames(stock) <- c(1:nrow(stock))#
+#
+print(stock)#
+#
+indices <- 300#
+#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
+#
+n <- length(stock)#
+#
+test.y <- stock[indices:n, 5]#
+test.x <- stock[indices:n, 6]#
+#
+test.df <- data.frame(X = test.x, Y = test.y)#
+#
+rmse <- function(y, h) {#
+  return(sqrt(mean((y - h) ^ 2)))#
+}#
+#
+performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+まずはyieldのみでpolyをして、結果の#
+#
+for (d in 1:12)#
+{#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d), data = stock)#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Training',#
+                                  RMSE = rmse(training.y, predict(poly.fit))))#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Test',#
+                                  RMSE = rmse(test.y, predict(poly.fit,#
+                                              newdata = test.df))))#
+}#
+#
+print(performance)#
+#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
+library('glmnet')#
+library('ggplot2')#
+library('plotly')#
+#
+# データを学習データとテストデータに分けて、交差検定をおこなう#
+# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
+#
+stock_2015 <- read.csv("stocks-sony-2015.csv")#
+# typeofを使えば、データ型を確認できる#
+# typeof(stock_2015)#
+# 日付で昇順にする#
+stock_2015 <- stock_2015[order(stock_2015[,1]),]#
+#
+stock_2016 <- read.csv("stocks-sony-2016.csv")#
+stock_2016 <- stock_2016[order(stock_2016[,1]),]#
+#
+stock_2017 <- read.csv("stocks-sony-2017.csv")#
+stock_2017 <- stock_2017[order(stock_2017[,1]),]#
+#
+stock <- rbind(stock_2015, stock_2016, stock_2017)#
+#
+# orderをすると、row numberがあべこべになる#
+# 必要かわからないがrownamesを使って行番号を振り直す#
+rownames(stock) <- c(1:nrow(stock))#
+#
+print(stock)#
+#
+indices <- 300#
+#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
+#
+n <- length(stock)#
+#
+test.y <- stock[indices:n, 5]#
+test.x <- stock[indices:n, 6]#
+#
+test.df <- data.frame(X = test.x, Y = test.y)#
+#
+rmse <- function(y, h) {#
+  return(sqrt(mean((y - h) ^ 2)))#
+}#
+#
+performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+まずはyieldのみでpolyをして、結果の#
+#
+for (d in 1:12)#
+{#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d), data = stock)#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Training',#
+                                  RMSE = rmse(training.y, predict(poly.fit))))#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Test',#
+                                  RMSE = rmse(test.y, predict(poly.fit,#
+                                              newdata = test.df))))#
+}#
+#
+print(performance)#
+#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
+library('glmnet')#
+library('ggplot2')#
+library('plotly')#
+#
+# データを学習データとテストデータに分けて、交差検定をおこなう#
+# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
+#
+stock_2015 <- read.csv("stocks-sony-2015.csv")#
+# typeofを使えば、データ型を確認できる#
+# typeof(stock_2015)#
+# 日付で昇順にする#
+stock_2015 <- stock_2015[order(stock_2015[,1]),]#
+#
+stock_2016 <- read.csv("stocks-sony-2016.csv")#
+stock_2016 <- stock_2016[order(stock_2016[,1]),]#
+#
+stock_2017 <- read.csv("stocks-sony-2017.csv")#
+stock_2017 <- stock_2017[order(stock_2017[,1]),]#
+#
+stock <- rbind(stock_2015, stock_2016, stock_2017)#
+#
+# orderをすると、row numberがあべこべになる#
+# 必要かわからないがrownamesを使って行番号を振り直す#
+rownames(stock) <- c(1:nrow(stock))#
+#
+print(stock)#
+#
+indices <- 300#
+#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
+#
+traning.df <- data.frame(X = trainig.x, Y = trainig.y)#
+#
+n <- length(stock)#
+#
+test.y <- stock[indices:n, 5]#
+test.x <- stock[indices:n, 6]#
+#
+test.df <- data.frame(X = test.x, Y = test.y)#
+#
+rmse <- function(y, h) {#
+  return(sqrt(mean((y - h) ^ 2)))#
+}#
+#
+performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+まずはyieldのみでpolyをして、結果の#
+#
+for (d in 1:12)#
+{#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d), data = stock)#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Training',#
+                                  RMSE = rmse(training.y, predict(poly.fit))))#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Test',#
+                                  RMSE = rmse(test.y, predict(poly.fit,#
+                                              newdata = test.df))))#
+}#
+#
+print(performance)#
+#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
+library('glmnet')#
+library('ggplot2')#
+library('plotly')#
+#
+# データを学習データとテストデータに分けて、交差検定をおこなう#
+# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
+#
+stock_2015 <- read.csv("stocks-sony-2015.csv")#
+# typeofを使えば、データ型を確認できる#
+# typeof(stock_2015)#
+# 日付で昇順にする#
+stock_2015 <- stock_2015[order(stock_2015[,1]),]#
+#
+stock_2016 <- read.csv("stocks-sony-2016.csv")#
+stock_2016 <- stock_2016[order(stock_2016[,1]),]#
+#
+stock_2017 <- read.csv("stocks-sony-2017.csv")#
+stock_2017 <- stock_2017[order(stock_2017[,1]),]#
+#
+stock <- rbind(stock_2015, stock_2016, stock_2017)#
+#
+# orderをすると、row numberがあべこべになる#
+# 必要かわからないがrownamesを使って行番号を振り直す#
+rownames(stock) <- c(1:nrow(stock))#
+#
+print(stock)#
+#
+indices <- 300#
+#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
+#
+traning.df <- data.frame(X = trainig.x, Y = trainig.y)#
+#
+n <- length(stock)#
+#
+test.y <- stock[indices:n, 5]#
+test.x <- stock[indices:n, 6]#
+#
+test.df <- data.frame(X = test.x, Y = test.y)#
+#
+rmse <- function(y, h) {#
+  return(sqrt(mean((y - h) ^ 2)))#
+}#
+#
+performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+まずはyieldのみでpolyをして、結果の#
+#
+for (d in 1:12)#
+{#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d), data = stock)#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Training',#
+                                  RMSE = rmse(training.y, predict(poly.fit))))#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Test',#
+                                  RMSE = rmse(test.y, predict(poly.fit,#
+                                              newdata = test.df))))#
+}#
+#
+print(performance)#
+#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
+library('glmnet')#
+library('ggplot2')#
+library('plotly')#
+#
+# データを学習データとテストデータに分けて、交差検定をおこなう#
+# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
+#
+stock_2015 <- read.csv("stocks-sony-2015.csv")#
+# typeofを使えば、データ型を確認できる#
+# typeof(stock_2015)#
+# 日付で昇順にする#
+stock_2015 <- stock_2015[order(stock_2015[,1]),]#
+#
+stock_2016 <- read.csv("stocks-sony-2016.csv")#
+stock_2016 <- stock_2016[order(stock_2016[,1]),]#
+#
+stock_2017 <- read.csv("stocks-sony-2017.csv")#
+stock_2017 <- stock_2017[order(stock_2017[,1]),]#
+#
+stock <- rbind(stock_2015, stock_2016, stock_2017)#
+#
+# orderをすると、row numberがあべこべになる#
+# 必要かわからないがrownamesを使って行番号を振り直す#
+rownames(stock) <- c(1:nrow(stock))#
+#
+print(stock)#
+#
+indices <- 300#
+#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
+#
+traning.df <- data.frame(X = training.x, Y = training.y)#
+#
+n <- length(stock)#
+#
+test.y <- stock[indices:n, 5]#
+test.x <- stock[indices:n, 6]#
+#
+test.df <- data.frame(X = test.x, Y = test.y)#
+#
+rmse <- function(y, h) {#
+  return(sqrt(mean((y - h) ^ 2)))#
+}#
+#
+performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+まずはyieldのみでpolyをして、結果の#
+#
+for (d in 1:12)#
+{#
+  poly.fit <- lm(end ~ poly(buy.sell, degree = d), data = stock)#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Training',#
+                                  RMSE = rmse(training.y, predict(poly.fit))))#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Test',#
+                                  RMSE = rmse(test.y, predict(poly.fit,#
+                                              newdata = test.df))))#
+}#
+#
+print(performance)#
+#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
+library('glmnet')#
+library('ggplot2')#
+library('plotly')#
+#
+# データを学習データとテストデータに分けて、交差検定をおこなう#
+# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
+#
+stock_2015 <- read.csv("stocks-sony-2015.csv")#
+# typeofを使えば、データ型を確認できる#
+# typeof(stock_2015)#
+# 日付で昇順にする#
+stock_2015 <- stock_2015[order(stock_2015[,1]),]#
+#
+stock_2016 <- read.csv("stocks-sony-2016.csv")#
+stock_2016 <- stock_2016[order(stock_2016[,1]),]#
+#
+stock_2017 <- read.csv("stocks-sony-2017.csv")#
+stock_2017 <- stock_2017[order(stock_2017[,1]),]#
+#
+stock <- rbind(stock_2015, stock_2016, stock_2017)#
+#
+# orderをすると、row numberがあべこべになる#
+# 必要かわからないがrownamesを使って行番号を振り直す#
+rownames(stock) <- c(1:nrow(stock))#
+#
+print(stock)#
+#
+indices <- 300#
+#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
+#
+traning.df <- data.frame(X = training.x, Y = training.y)#
+#
+n <- length(stock)#
+#
+test.y <- stock[indices:n, 5]#
+test.x <- stock[indices:n, 6]#
+#
+test.df <- data.frame(X = test.x, Y = test.y)#
+#
+rmse <- function(y, h) {#
+  return(sqrt(mean((y - h) ^ 2)))#
+}#
+#
+performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+まずはyieldのみでpolyをして、結果の#
+#
 for (d in 1:12)#
 {#
   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
@@ -7573,9 +7819,650 @@ for (d in 1:12)#
                                               newdata = test.df))))#
 }#
 #
-p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
-  geom_point() +#
-  geom_line()#
-p <- ggplotly(p)#
+print(performance)#
 #
-p
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
+library('glmnet')#
+library('ggplot2')#
+library('plotly')#
+#
+# データを学習データとテストデータに分けて、交差検定をおこなう#
+# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
+#
+stock_2015 <- read.csv("stocks-sony-2015.csv")#
+# typeofを使えば、データ型を確認できる#
+# typeof(stock_2015)#
+# 日付で昇順にする#
+stock_2015 <- stock_2015[order(stock_2015[,1]),]#
+#
+stock_2016 <- read.csv("stocks-sony-2016.csv")#
+stock_2016 <- stock_2016[order(stock_2016[,1]),]#
+#
+stock_2017 <- read.csv("stocks-sony-2017.csv")#
+stock_2017 <- stock_2017[order(stock_2017[,1]),]#
+#
+stock <- rbind(stock_2015, stock_2016, stock_2017)#
+#
+# orderをすると、row numberがあべこべになる#
+# 必要かわからないがrownamesを使って行番号を振り直す#
+rownames(stock) <- c(1:nrow(stock))#
+#
+print(stock)#
+#
+indices <- 300#
+#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
+#
+training.df <- data.frame(X = training.x, Y = training.y)#
+#
+n <- length(stock)#
+#
+test.y <- stock[indices:n, 5]#
+test.x <- stock[indices:n, 6]#
+#
+test.df <- data.frame(X = test.x, Y = test.y)#
+#
+rmse <- function(y, h) {#
+  return(sqrt(mean((y - h) ^ 2)))#
+}#
+#
+performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+まずはyieldのみでpolyをして、結果の#
+#
+for (d in 1:12)#
+{#
+  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Training',#
+                                  RMSE = rmse(training.y, predict(poly.fit))))#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Test',#
+                                  RMSE = rmse(test.y, predict(poly.fit,#
+                                              newdata = test.df))))#
+}#
+#
+print(performance)#
+#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
+library('glmnet')#
+library('ggplot2')#
+library('plotly')#
+#
+# データを学習データとテストデータに分けて、交差検定をおこなう#
+# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
+#
+stock_2015 <- read.csv("stocks-sony-2015.csv")#
+# typeofを使えば、データ型を確認できる#
+# typeof(stock_2015)#
+# 日付で昇順にする#
+stock_2015 <- stock_2015[order(stock_2015[,1]),]#
+#
+stock_2016 <- read.csv("stocks-sony-2016.csv")#
+stock_2016 <- stock_2016[order(stock_2016[,1]),]#
+#
+stock_2017 <- read.csv("stocks-sony-2017.csv")#
+stock_2017 <- stock_2017[order(stock_2017[,1]),]#
+#
+stock <- rbind(stock_2015, stock_2016, stock_2017)#
+#
+# orderをすると、row numberがあべこべになる#
+# 必要かわからないがrownamesを使って行番号を振り直す#
+rownames(stock) <- c(1:nrow(stock))#
+#
+print(stock)#
+#
+indices <- 300#
+#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
+#
+training.df <- data.frame(X = training.x, Y = training.y)#
+#
+n <- length(stock)#
+#
+test.y <- stock[indices:n, 5]#
+test.x <- stock[indices:n, 6]#
+#
+test.df <- data.frame(X = test.x, Y = test.y)#
+#
+rmse <- function(y, h) {#
+  return(sqrt(mean((y - h) ^ 2)))#
+}#
+#
+performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+# まずはyieldのみでpolyをして、結果の関数を確認してみる#
+#
+for (d in 1:12)#
+{#
+  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Training',#
+                                  RMSE = rmse(training.y, predict(poly.fit))))#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Test',#
+                                  RMSE = rmse(test.y, predict(poly.fit,#
+                                              newdata = test.df))))#
+}#
+#
+print(performance)#
+#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
+library('glmnet')#
+library('ggplot2')#
+library('plotly')#
+#
+# データを学習データとテストデータに分けて、交差検定をおこなう#
+# ちないみに、データのyieldは出来高で、buy-sellは売買代金#
+#
+stock_2015 <- read.csv("stocks-sony-2015.csv")#
+# typeofを使えば、データ型を確認できる#
+# typeof(stock_2015)#
+# 日付で昇順にする#
+stock_2015 <- stock_2015[order(stock_2015[,1]),]#
+#
+stock_2016 <- read.csv("stocks-sony-2016.csv")#
+stock_2016 <- stock_2016[order(stock_2016[,1]),]#
+#
+stock_2017 <- read.csv("stocks-sony-2017.csv")#
+stock_2017 <- stock_2017[order(stock_2017[,1]),]#
+#
+stock <- rbind(stock_2015, stock_2016, stock_2017)#
+#
+# orderをすると、row numberがあべこべになる#
+# 必要かわからないがrownamesを使って行番号を振り直す#
+rownames(stock) <- c(1:nrow(stock))#
+#
+print(stock)#
+#
+indices <- 300#
+#
+training.y <- stock[1:indices, 5]#
+training.x <- stock[1:indices, 6]#
+#
+training.df <- data.frame(X = training.x, Y = training.y)#
+#
+n <- length(stock)#
+#
+test.y <- stock[indices:n, 5]#
+test.x <- stock[indices:n, 6]#
+#
+test.df <- data.frame(X = test.x, Y = test.y)#
+#
+rmse <- function(y, h) {#
+  return(sqrt(mean((y - h) ^ 2)))#
+}#
+#
+performance <- data.frame()#
+# polyを2つけ結合して重回帰を実現したい#
+# まずはyieldのみでpolyをして、結果の関数を確認してみる#
+#
+for (d in 1:12)#
+{#
+  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Training',#
+                                  RMSE = rmse(training.y, predict(poly.fit))))#
+#
+  performance <- rbind(performance,#
+                      data.frame(Degree = d,#
+                                  Data = 'Test',#
+                                  RMSE = rmse(test.y, predict(poly.fit,#
+                                              newdata = test.df))))#
+}#
+#
+print(performance)#
+#
+# #### 以下、yieldのみを使ってendを予測したモデル#
+# # yieldを使ってendを予測する#
+# x <- stock[, 6]#
+# y <- stock[, 5]#
+##
+# n <- length(x)#
+##
+# ####
+# ## 以下、ランダムにトレーニングデータとテストデータを分ける方法#
+# ## データをtraingデータとtestデータにランダムな割合に分割するためにindicesを生成#
+# ## printしてみるとランダムに抜き出していて、時系列の解析には合わない？？#
+# # indices <- sort(sample(1:n, round(0.5 * n)))#
+# # print(indices)#
+# ####
+##
+# indices <- 420#
+##
+# # 始めからindices個のデータをトレーニングデータとして利用する#
+# training.x <- x[1:indices]#
+# training.y <- y[1:indices]#
+##
+##
+# hoge.df <- data.frame(X = training.x, Y = training.y)#
+# print(hoge.df)#
+##
+# print(training.x)#
+# print(training.y)#
+##
+# test.x <- x[indices:n]#
+# test.y <- y[indices:n]#
+##
+# print(test.x)#
+# print(test.y)#
+##
+# # テストデータとトレーニングデータのデータフレームを作成する#
+# # rでは、data.frameは色々な方が入れられて、matrixは1種類の型しか入れられないらしい#
+# training.df <- data.frame(X = training.x, Y = training.y)#
+# test.df <- data.frame(X = test.x, Y = test.y)#
+##
+# # # training.dfを単にplotしてみる#
+# # ttt <- ggplot(training.df, aes(x = X, y = Y)) +#
+# #   geom_point() +#
+# #   geom_line()#
+# ##
+# # print(ttt)#
+#
+##
+# # 以下、RMSE（平均２乗誤差、root mean square error）のコードを作成する#
+# # degree（関数の次元）を増やしていって、テストデータとトレーニングデータの学習曲線を比較#
+# # まず、コストを出す関数を自作#
+# rmse <- function(y, h) {#
+#     return(sqrt(mean((y - h) ^ 2)))#
+# }#
+##
+# performance <- data.frame()#
+##
+# # degreeを1から12まで増やしつつ、計算していく#
+# for (d in 1:12)#
+# {#
+#   poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Training',#
+#                                   RMSE = rmse(training.y, predict(poly.fit))))#
+##
+#   performance <- rbind(performance,#
+#                       data.frame(Degree = d,#
+#                                   Data = 'Test',#
+#                                   RMSE = rmse(test.y, predict(poly.fit,#
+#                                               newdata = test.df))))#
+# }#
+##
+# p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+##
+# p <- ggplotly(p)#
+##
+# p#
+##
+# # pの結果を見る限りだと、degreeは3~9の間が良さそう#
+# # 真ん中の5あたりを使ってみる#
+##
+# p.lm <- lm(Y ~ poly(X, degree = 5), data = training.df)#
+##
+# # # predict関数を利用すると、p.lmの結果を利用して、test.dfの予測値がだされる#
+# # # predictに関する使い方は、下記の記事がいい感じ#
+# # # https://qiita.com/stkdev/items/f79af90db4799370e3aa#
+# # predict(p.lm, newdata = test.df)#
+##
+# # transform関数でtraining.dfにPredict.training.yを追加する#
+# # predict(p.lm)は、predict(p.lm, newdata = training.df)となる#
+# # つまり、predictでデータを指定しなければ、lmで使ったデータについて出力される#
+# predict.p <- transform(training.df , Predict.training.y = predict(p.lm))#
+##
+# # plotした時に、桁数の大きい数字が指数表示(2e+1とか)にならないように設定する#
+# options(scipen=100000)#
+##
+# # yieldを使って、endが予測されている#
+# # ただ、あまり良くない結果っぽい#
+# plot.predict.p <- ggplot(predict.p, aes(x = X, y = Predict.training.y)) +#
+#   geom_point() +#
+#   geom_line()#
+##
+# plotly.predict.p <- ggplotly(plot.predict.p)#
+##
+# print(plotly.predict.p)#
+##
+# #### ここまで、yieldのみを使ってendを予測したモデル
