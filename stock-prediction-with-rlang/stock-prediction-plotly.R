@@ -28,16 +28,22 @@ print(stock)
 indices <- 300
 
 training.y <- stock[1:indices, 5]
+# yieldをxに取り出し
 training.x <- stock[1:indices, 6]
+# buy-sellをx1に取り出し
+training.x1 <- stock[1:indices, 7]
 
-training.df <- data.frame(X = training.x, Y = training.y)
+training.df <- data.frame(X = training.x, X1 = training.x1, Y = training.y)
 
 n <- length(stock)
 
 test.y <- stock[indices:n, 5]
+# yieldをxに取り出し
 test.x <- stock[indices:n, 6]
+# buy-sellをx1に取り出し
+test.x1 <- stock[indices:n, 7]
 
-test.df <- data.frame(X = test.x, Y = test.y)
+test.df <- data.frame(X = test.x, X1 = test.x1, Y = test.y)
 
 rmse <- function(y, h) {
   return(sqrt(mean((y - h) ^ 2)))
@@ -45,26 +51,39 @@ rmse <- function(y, h) {
 
 performance <- data.frame()
 
-
-# polyを2つけ結合して重回帰を実現したい
-# まずはyieldのみでpolyをして、結果の関数を確認してみる
+# lmで複数の説明変数でpoly的なことをしたければ、polymを使えばいいらしい
+# 以下、polymolistic linear regressionをpolymを使って回していく
 
 for (d in 1:12) {
-  poly.fit <- lm(Y ~ poly(X, degree = d), data = training.df)
+  polym.fit <- lm(Y ~ polym(X, X1, degree = d), data = training.df)
+
+  # print(polym.fit)
+  # print(class(polym.fit)) # データ型を確認する
+  # str(polym.fit) # str関すでは、オブジェクトの中身の概要を確認できる。詳細を確認する時にはsummary関数を利用する
+
 
   performance <- rbind(performance,
                       data.frame(Degree = d,
                                   Data = 'Training',
-                                  RMSE = rmse(training.y, predict(poly.fit))))
+                                  RMSE = rmse(training.y, predict(polym.fit))))
 
   performance <- rbind(performance,
                       data.frame(Degree = d,
                                   Data = 'Test',
-                                  RMSE = rmse(test.y, predict(poly.fit,
+                                  RMSE = rmse(test.y, predict(polym.fit,
                                               newdata = test.df))))
 }
 
 print(performance)
+
+p <- ggplot(performance, aes(x = Degree, y = RMSE, linetype = Data)) +
+  geom_point() +
+  geom_line()
+
+p <- ggplotly(p)
+
+p
+
 
 # #### 以下、yieldのみを使ってendを予測したモデル
 # # yieldを使ってendを予測する
